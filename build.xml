@@ -76,7 +76,7 @@
           target: go
                     Go ivy, go!
          ================================= -->
-    <target name="go" depends="install-ivy, generate-src" 
+    <target name="go" depends="install-ivy, generate-src, resolve" 
             description="--> resolve dependencies, compile and run the project">
 		<echo message="using ivy to resolve commons-lang 2.1..."/>
         <!-- here comes the magic line: asks ivy to resolve a dependency on 
@@ -86,6 +86,8 @@
         
 		<echo message="compiling..."/>
         <mkdir dir="${build.dir}" />
+		<pathconvert property="tmp" refid="lib.path.id"/>
+		<echo>Classpath is ${tmp}</echo>
         <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="lib.path.id" />
         
 		<echo>
@@ -99,6 +101,22 @@ Let's go!
             </classpath>
         </java>
     </target>
+
+   
+    <target name="run" depends="go">
+	        <java classname="example.Hello">
+            <classpath>
+                <path refid="lib.path.id" />
+                <path location="${build.dir}" />
+            </classpath>	
+        </java>
+    </target>
+
+    <target name = "resolve">
+	<ivy:resolve/>
+	<ivy:cachepath pathid="lib.path.id"/>	
+    </target>	
+
 
 	<!-- ================================= 
           target: generate-src
